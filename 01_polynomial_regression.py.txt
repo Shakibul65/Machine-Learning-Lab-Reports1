@@ -1,0 +1,35 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Step 1: Generate Non-linear Synthetic Data
+np.random.seed(42)
+X = 2 - 3 * np.random.normal(0, 1, 100)
+y = X - 2 * (X ** 2) + np.random.normal(-3, 3, 100)
+X = X[:, np.newaxis]
+
+# Step 2: Transform Data to Polynomial Features (Degree 2)
+poly_features = PolynomialFeatures(degree=2)
+X_poly = poly_features.fit_transform(X)
+
+# Step 3: Fit Linear Regression Model on Polynomial Features
+model = LinearRegression()
+model.fit(X_poly, y)
+y_poly_pred = model.predict(X_poly)
+
+# Step 4: Plotting the Result
+plt.figure(figsize=(8, 5))
+plt.scatter(X, y, color='blue', label='Actual Data')
+sort_axis = np.argsort(X.flatten())
+plt.plot(X[sort_axis], y_poly_pred[sort_axis], color='red', linewidth=2, label='Polynomial Fit (Deg 2)')
+plt.title('Polynomial Regression')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.legend()
+plt.show()
+
+print("--- Polynomial Regression Performance ---")
+print(f"Mean Squared Error (MSE): {mean_squared_error(y, y_poly_pred):.4f}")
+print(f"R-squared Score (R2): {r2_score(y, y_poly_pred):.4f}")

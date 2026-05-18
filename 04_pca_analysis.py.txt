@@ -1,0 +1,34 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+
+# Step 1: Load 4-Dimensional Iris Dataset
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+# Step 2: Apply PCA to reduce 4 features into 2 Principal Components
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+# Convert to DataFrame for visualization
+pca_df = pd.DataFrame(data=X_pca, columns=['PC 1', 'PC 2'])
+pca_df['Target'] = y
+
+# Step 3: Plot the 2D Reduced Data
+plt.figure(figsize=(8, 6))
+targets = [0, 1, 2]
+colors = ['r', 'g', 'b']
+for target, color in zip(targets, colors):
+    indices = pca_df['Target'] == target
+    plt.scatter(pca_df.loc[indices, 'PC 1'], pca_df.loc[indices, 'PC 2'], c=color, s=50, label=iris.target_names[target])
+
+plt.title('PCA - Dimension Reduction (4D to 2D)')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.legend()
+plt.grid()
+plt.show()
+
+print(f"Explained variance ratio: {pca.explained_variance_ratio_}") 

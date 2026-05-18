@@ -1,0 +1,43 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+# Step 1: Load Built-in Wine Dataset & Convert to Binary Classification
+data = load_wine()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+y = (data.target == 0).astype(int) 
+X = df
+
+# Step 2: Split and Scale
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Step 3: Logistic Regression
+lr = LogisticRegression()
+lr.fit(X_train_scaled, y_train)
+lr_pred = lr.predict(X_test_scaled)
+
+# Step 4: Support Vector Machine (SVM)
+svm = SVC(kernel='rbf', C=1.0)
+svm.fit(X_train_scaled, y_train)
+svm_pred = svm.predict(X_test_scaled)
+
+# Step 5: Confusion Matrix Visualization
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+sns.heatmap(confusion_matrix(y_test, lr_pred), annot=True, fmt='d', cmap='Blues', ax=ax[0])
+ax[0].set_title('Logistic Regression CM')
+sns.heatmap(confusion_matrix(y_test, svm_pred), annot=True, fmt='d', cmap='Purples', ax=ax[1])
+ax[1].set_title('SVM CM')
+plt.show()
+
+print("Logistic Regression Accuracy:", accuracy_score(y_test, lr_pred))
+print("SVM Accuracy:", accuracy_score(y_test, svm_pred))
